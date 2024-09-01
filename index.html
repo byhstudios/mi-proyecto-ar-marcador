@@ -37,15 +37,15 @@
     <video id="videoElement" autoplay playsinline></video>
     <div id="modelContainer">
         <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-            <!-- Cargar el modelo GLB con la posición original -->
+            <!-- Ajuste de la posición del modelo y escala -->
             <a-entity 
                 gltf-model="url(modelo.glb)" 
-                position="0 -0.5 -2"
-                scale="3 3 3" 
+                position="0 -0.5 -5"  <!-- Alejamos el modelo más hacia el fondo -->
+                scale="2 2 2"  <!-- Redujimos la escala para que no ocupe tanto espacio -->
                 rotation="-3 105 30"> 
             </a-entity>
-            <!-- Ajuste del FOV de la cámara a un valor más moderado -->
-            <a-entity camera="fov: 90"></a-entity> <!-- Ajustado a 90 -->
+            <!-- Incremento del FOV para alejar la cámara -->
+            <a-entity camera="fov: 130"></a-entity> <!-- Aumentado a 130 -->
         </a-scene>
     </div>
 
