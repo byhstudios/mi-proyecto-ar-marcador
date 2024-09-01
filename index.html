@@ -40,12 +40,12 @@
             <!-- Cargar el modelo GLB con la posición original -->
             <a-entity 
                 gltf-model="url(modelo.glb)" 
-                position="0 -0.5 -2"  <!-- Revertido a la posición original -->
+                position="0 -0.5 -2"
                 scale="3 3 3" 
                 rotation="-3 105 30"> 
             </a-entity>
-            <!-- Ajuste del FOV de la cámara -->
-            <a-entity camera="fov: 80"></a-entity>
+            <!-- Aumentar el FOV de la cámara para alejarla aún más -->
+            <a-entity camera="fov: 120"></a-entity> <!-- Aumentado a 120 -->
         </a-scene>
     </div>
 
