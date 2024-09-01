@@ -20,8 +20,8 @@
 </head>
 <body>
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-        <!-- Cámara AR.js con FOV ajustado -->
-        <a-camera gps-camera fov="-6000"></a-camera>  <!-- Ajuste del FOV a 90 -->
+        <!-- Cámara AR.js sin FOV -->
+        <a-camera gps-camera></a-camera>
 
         <!-- Modelo 3D -->
         <a-entity
@@ -39,10 +39,10 @@
             output.style.position = 'absolute';
             output.style.top = '0';
             output.style.left = '0';
-            output.style.color = 'black';  // Texto negro
-            output.style.backgroundColor = 'rgba(255,255,255,0.7)';  // Fondo blanco semitransparente
+            output.style.color = 'black';
+            output.style.backgroundColor = 'rgba(255,255,255,0.7)';
             output.style.padding = '10px';
-            output.style.zIndex = '1000';  // Asegura que esté al frente
+            output.style.zIndex = '1000';
             document.body.appendChild(output);
 
             // Función para mostrar los mensajes
@@ -54,7 +54,9 @@
 
             navigator.mediaDevices.getUserMedia({
                 video: {
-                    facingMode: { ideal: "environment" }
+                    facingMode: { ideal: "environment" }, // Usa la cámara trasera
+                    width: { ideal: 1920 },  // Asegura alta resolución
+                    height: { ideal: 1080 }
                 }
             }).then(function (stream) {
                 log("Acceso a la cámara concedido.");
