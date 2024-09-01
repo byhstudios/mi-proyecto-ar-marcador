@@ -37,21 +37,36 @@
     <video id="videoElement" autoplay playsinline></video>
     <div id="modelContainer">
         <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-            <!-- Ajuste de la posición del modelo y escala -->
+            <!-- Mantén el modelo con la posición y escala anteriores -->
             <a-entity 
+                id="modelo" 
                 gltf-model="url(modelo.glb)" 
-                position="0 -0.5 -5"  <!-- Alejamos el modelo más hacia el fondo -->
-                scale="2 2 2"  <!-- Redujimos la escala para que no ocupe tanto espacio -->
+                position="0 -0.5 -2"
+                scale="3 3 3" 
                 rotation="-3 105 30"> 
             </a-entity>
-            <!-- Incremento del FOV para alejar la cámara -->
-            <a-entity camera="fov: 130"></a-entity> <!-- Aumentado a 130 -->
+            <!-- Ajuste del FOV moderado para evitar zoom excesivo -->
+            <a-entity id="camara" camera="fov: 90"></a-entity>
         </a-scene>
     </div>
 
     <script>
         // Acceder a la cámara trasera
         const video = document.getElementById('videoElement');
+
+        // Monitoreo de cambios en el FOV y posición
+        document.querySelector('#camara').addEventListener('componentchanged', function (evt) {
+            if (evt.detail.name === 'camera') {
+                console.log("FOV actual:", evt.target.getAttribute('camera').fov);
+            }
+        });
+
+        document.querySelector('#modelo').addEventListener('componentchanged', function (evt) {
+            if (evt.detail.name === 'position' || evt.detail.name === 'scale') {
+                console.log("Posición actual del modelo:", evt.target.getAttribute('position'));
+                console.log("Escala actual del modelo:", evt.target.getAttribute('scale'));
+            }
+        });
 
         if (navigator.mediaDevices.getUserMedia) {
             navigator.mediaDevices.enumerateDevices()
