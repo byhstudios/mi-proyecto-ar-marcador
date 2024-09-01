@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR.js con Detección de Plano</title>
+    <title>Mostrar Modelo 3D sobre la Cámara</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://rawcdn.githack.com/AR-js-org/AR.js/3.3.2/aframe/build/aframe-ar.js"></script>
     <style>
         body, html {
             margin: 0;
@@ -14,59 +13,74 @@
             position: relative;
             width: 100%;
             height: 100vh;
-            background-color: transparent;
+            background-color: black;
+        }
+        #videoElement {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        #modelContainer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
         }
     </style>
 </head>
 <body>
-    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-        <!-- Cámara AR.js sin FOV -->
-        <a-camera gps-camera></a-camera>
-
-        <!-- Modelo 3D -->
-        <a-entity
-            gltf-model="url(modelo.glb)"
-            position="0 0 -5"
-            scale="1 1 1"
-            rotation="0 0 0">
-        </a-entity>
-    </a-scene>
+    <video id="videoElement" autoplay playsinline></video>
+    <div id="modelContainer">
+        <a-scene embedded>
+            <!-- Cargar el modelo GLB con ajustes -->
+            <a-entity 
+                gltf-model="url(modelo.glb)" 
+                position="-0.28 -0.5 -2" 
+                scale="3.5 3.5 3.5" 
+                rotation="-3 115 20"> 
+            </a-entity>
+            <a-entity camera></a-entity>
+        </a-scene>
+    </div>
 
     <script>
-        window.onload = function () {
-            // Crear un div para mostrar los mensajes en la pantalla
-            let output = document.createElement('div');
-            output.style.position = 'absolute';
-            output.style.top = '0';
-            output.style.left = '0';
-            output.style.color = 'black';
-            output.style.backgroundColor = 'rgba(255,255,255,0.7)';
-            output.style.padding = '10px';
-            output.style.zIndex = '1000';
-            document.body.appendChild(output);
+        // Acceder a la cámara trasera
+        const video = document.getElementById('videoElement');
 
-            // Función para mostrar los mensajes
-            function log(message) {
-                output.innerText += message + '\n';
-            }
+        if (navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.enumerateDevices()
+            .then(function(devices) {
+                let cameraId;
+                devices.forEach(function(device) {
+                    if (device.kind === 'videoinput' && device.label.toLowerCase().includes('back')) {
+                        cameraId = device.deviceId;
+                    }
+                });
 
-            log("Solicitando acceso a la cámara trasera...");
-
-            navigator.mediaDevices.getUserMedia({
-                video: {
-                    facingMode: { ideal: "environment" }, // Usa la cámara trasera
-                    width: { ideal: 1920 },  // Asegura alta resolución
-                    height: { ideal: 1080 }
+                if (cameraId) {
+                    navigator.mediaDevices.getUserMedia({ 
+                        video: { deviceId: { exact: cameraId } } // Usar la cámara trasera
+                    })
+                    .then(function(stream) {
+                        video.srcObject = stream;
+                    })
+                    .catch(function(error) {
+                        console.error("Error al acceder a la cámara: ", error);
+                    });
+                } else {
+                    console.error("No se encontró la cámara trasera.");
                 }
-            }).then(function (stream) {
-                log("Acceso a la cámara concedido.");
-                const video = document.querySelector('video');
-                video.srcObject = stream;
-                log("Stream de video asignado a la fuente del video.");
-            }).catch(function (error) {
-                log("Error al acceder a la cámara trasera: " + error.message);
+            })
+            .catch(function(error) {
+                console.error("Error al enumerar los dispositivos: ", error);
             });
-        };
+        } else {
+            console.error("getUserMedia no es compatible con este navegador.");
+        }
     </script>
 </body>
 </html>
