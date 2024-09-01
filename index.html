@@ -39,14 +39,13 @@
         <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
             <!-- Mantén el modelo con la posición y escala anteriores -->
             <a-entity 
-                id="modelo" 
                 gltf-model="url(modelo.glb)" 
                 position="0 -0.5 -2"
                 scale="3 3 3" 
                 rotation="-3 105 30"> 
             </a-entity>
-            <!-- Ajuste del FOV moderado para evitar zoom excesivo -->
-            <a-entity id="camara" camera="fov: 90"></a-entity>
+            <!-- Cambiamos la posición de la cámara para alejarla en el eje Z -->
+            <a-entity camera position="0 0 2"></a-entity> <!-- Alejado hacia atrás -->
         </a-scene>
     </div>
 
@@ -54,26 +53,12 @@
         // Acceder a la cámara trasera
         const video = document.getElementById('videoElement');
 
-        // Monitoreo de cambios en el FOV y posición
-        document.querySelector('#camara').addEventListener('componentchanged', function (evt) {
-            if (evt.detail.name === 'camera') {
-                console.log("FOV actual:", evt.target.getAttribute('camera').fov);
-            }
-        });
-
-        document.querySelector('#modelo').addEventListener('componentchanged', function (evt) {
-            if (evt.detail.name === 'position' || evt.detail.name === 'scale') {
-                console.log("Posición actual del modelo:", evt.target.getAttribute('position'));
-                console.log("Escala actual del modelo:", evt.target.getAttribute('scale'));
-            }
-        });
-
         if (navigator.mediaDevices.getUserMedia) {
             navigator.mediaDevices.enumerateDevices()
             .then(function(devices) {
                 let cameraId;
                 devices.forEach(function(device) {
-                    if (device.kind === 'videoinput' && device.label.toLowerCase().includes('back')) {
+                    if (device.kind === 'videoinput' && device.label toLowerCase().includes('back')) {
                         cameraId = device.deviceId;
                     }
                 });
