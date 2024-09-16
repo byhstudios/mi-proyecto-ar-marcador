@@ -22,6 +22,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            z-index: -1; /* Mantener el video detrás de la escena */
         }
         #modelContainer {
             position: absolute;
@@ -111,14 +112,23 @@
             // Obtener la escena de A-Frame
             const scene = document.querySelector('a-scene');
             
-            // Usar el renderer de Three.js para capturar la escena
+            // Crear un canvas para combinar el video y la escena 3D
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const context = canvas.getContext('2d');
+
+            // Dibujar el video en el canvas
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Dibujar la escena 3D en el canvas
             scene.renderer.render(scene.object3D, scene.camera);
-            const canvas = scene.renderer.domElement;
-            
-            // Obtener la imagen de la escena completa como una URL en formato PNG
+            context.drawImage(scene.renderer.domElement, 0, 0, canvas.width, canvas.height);
+
+            // Obtener la imagen combinada como una URL en formato PNG
             const photo = document.getElementById('photo');
             photo.src = canvas.toDataURL('image/png');
-            
+
             // Mostrar la imagen tomada en la página
             photo.style.display = 'block';
         }
