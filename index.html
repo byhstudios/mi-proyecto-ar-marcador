@@ -44,7 +44,7 @@
 <body>
     <video id="videoElement" autoplay playsinline></video>
     <div id="modelContainer">
-        <a-scene embedded>
+        <a-scene embedded id="scene">
             <!-- Añadir cursor para detectar el toque en dispositivos móviles -->
             <a-entity cursor="fuse: false; rayOrigin: mouse"></a-entity>
             
@@ -108,19 +108,17 @@
 
         // Función que se ejecuta al hacer clic en el modelo 3D
         function takePhoto() {
-            // Crear un canvas para capturar la imagen
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth; // Usar el ancho actual del video
-            canvas.height = video.videoHeight; // Usar la altura actual del video
-            const context = canvas.getContext('2d');
-
-            // Dibujar el fotograma actual del video en el canvas
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            // Obtener la imagen como una URL en formato PNG
+            // Obtener la escena de A-Frame
+            const scene = document.querySelector('a-scene');
+            
+            // Usar el renderer de Three.js para capturar la escena
+            scene.renderer.render(scene.object3D, scene.camera);
+            const canvas = scene.renderer.domElement;
+            
+            // Obtener la imagen de la escena completa como una URL en formato PNG
             const photo = document.getElementById('photo');
             photo.src = canvas.toDataURL('image/png');
-
+            
             // Mostrar la imagen tomada en la página
             photo.style.display = 'block';
         }
