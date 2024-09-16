@@ -30,14 +30,27 @@
             width: 100%;
             height: 100%;
         }
+        #photo {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 150px;
+            height: auto;
+            border: 2px solid white;
+            display: none;
+        }
     </style>
 </head>
 <body>
     <video id="videoElement" autoplay playsinline></video>
     <div id="modelContainer">
         <a-scene embedded>
+            <!-- Añadir cursor para detectar el toque en dispositivos móviles -->
+            <a-entity cursor="fuse: false; rayOrigin: mouse"></a-entity>
+            
             <!-- Cargar el modelo GLB con ajustes -->
             <a-entity 
+                id="3dModel"
                 gltf-model="url(modelo.glb)" 
                 position="-0.28 -0.5 -2" 
                 scale="3.5 3.5 3.5" 
@@ -46,6 +59,9 @@
             <a-entity camera></a-entity>
         </a-scene>
     </div>
+
+    <!-- Imagen para mostrar la fotografía tomada -->
+    <img id="photo" />
 
     <script>
         // Acceder a la cámara trasera
@@ -81,6 +97,35 @@
         } else {
             console.error("getUserMedia no es compatible con este navegador.");
         }
+
+        // ********* Inicio de la funcionalidad para tomar una fotografía *********
+        
+        // Obtener el modelo 3D por su ID
+        const model = document.getElementById('3dModel');
+        
+        // Añadir el evento 'click' al modelo 3D para tomar la fotografía
+        model.addEventListener('click', takePhoto);
+
+        // Función que se ejecuta al hacer clic en el modelo 3D
+        function takePhoto() {
+            // Crear un canvas para capturar la imagen
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth; // Usar el ancho actual del video
+            canvas.height = video.videoHeight; // Usar la altura actual del video
+            const context = canvas.getContext('2d');
+
+            // Dibujar el fotograma actual del video en el canvas
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Obtener la imagen como una URL en formato PNG
+            const photo = document.getElementById('photo');
+            photo.src = canvas.toDataURL('image/png');
+
+            // Mostrar la imagen tomada en la página
+            photo.style.display = 'block';
+        }
+
+        // ********* Fin de la funcionalidad para tomar una fotografía *********
     </script>
 </body>
 </html>
