@@ -108,6 +108,16 @@
 
         // Función que se ejecuta al hacer clic en el modelo 3D
         function takePhoto() {
+            // Almacenar la escala original
+            const originalScale = model.getAttribute('scale');
+
+            // Ajustar la escala del modelo para hacerlo más largo (20% más en el eje Y)
+            model.setAttribute('scale', {
+                x: originalScale.x,
+                y: originalScale.y * 1.2, // Incrementar el tamaño en el eje Y
+                z: originalScale.z
+            });
+
             // Crear un canvas para capturar la imagen
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
@@ -125,6 +135,9 @@
             // Renderizar la escena 3D en el canvas
             scene.renderer.render(scene.object3D, scene.camera);
             context.drawImage(scene.renderer.domElement, 0, 0, canvas.width, canvas.height);
+
+            // Restaurar la escala original del modelo
+            model.setAttribute('scale', originalScale);
 
             // Obtener la imagen combinada como una URL en formato PNG
             const photo = document.getElementById('photo');
