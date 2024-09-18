@@ -48,6 +48,16 @@
             <!-- Añadir cursor para detectar el toque en dispositivos móviles -->
             <a-entity cursor="fuse: false; rayOrigin: mouse"></a-entity>
             
+            <!-- Añadir un círculo negro con opacidad para simular la sombra -->
+            <a-circle 
+                id="shadow"
+                position="-0.28 -0.5 -2.01" 
+                rotation="-90 0 0" 
+                radius="1.5" 
+                color="#000000" 
+                opacity="0.3">
+            </a-circle>
+
             <!-- Cargar el modelo GLB con ajustes -->
             <a-entity 
                 id="3dModel"
