@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mostrar Modelo 3D sobre la Cámara</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.rawgit.com/aframevr/aframe/master/dist/aframe-screenshot-component.min.js"></script>
     <style>
         body, html {
             margin: 0;
@@ -61,7 +60,7 @@
         </a-scene>
     </div>
 
-    <!-- Imagen para mostrar la captura de pantalla tomada -->
+    <!-- Imagen para mostrar la fotografía tomada -->
     <img id="photo" />
 
     <script>
@@ -99,33 +98,56 @@
             console.error("getUserMedia no es compatible con este navegador.");
         }
 
-        // ********* Inicio de la funcionalidad para tomar una captura de pantalla *********
+        // ********* Inicio de la funcionalidad para tomar una fotografía *********
         
         // Obtener el modelo 3D por su ID
         const model = document.getElementById('3dModel');
         
-        // Añadir el evento 'click' al modelo 3D para tomar la captura de pantalla
-        model.addEventListener('click', takeScreenshot);
+        // Añadir el evento 'click' al modelo 3D para tomar la fotografía
+        model.addEventListener('click', takePhoto);
 
         // Función que se ejecuta al hacer clic en el modelo 3D
-        function takeScreenshot() {
-            const scene = document.querySelector('a-scene');
-            
-            // Tomar la captura de pantalla de la escena de A-Frame
-            scene.components.screenshot.capture('perspective');
+        function takePhoto() {
+            // Crear un canvas para capturar la imagen
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
 
-            // Esperar un momento para obtener la captura y mostrarla
-            setTimeout(() => {
-                const screenshotDataUrl = scene.components.screenshot.getCanvas('perspective').toDataURL('image/png');
-                
-                // Obtener la imagen y mostrarla
-                const photo = document.getElementById('photo');
-                photo.src = screenshotDataUrl;
-                photo.style.display = 'block';
-            }, 100);
+            // Configurar el tamaño del canvas
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            // Dibujar el video de la cámara en el canvas
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Obtener la escena de A-Frame
+            const scene = document.querySelector('a-scene');
+
+            // Renderizar la escena 3D en el canvas
+            scene.renderer.render(scene.object3D, scene.camera);
+            context.drawImage(scene.renderer.domElement, 0, 0, canvas.width, canvas.height);
+
+            // Obtener la imagen combinada como una URL en formato PNG
+            const photo = document.getElementById('photo');
+            photo.src = canvas.toDataURL('image/png');
+
+            // Mostrar la imagen tomada en la página
+            photo.style.display = 'block';
+
+            // Descargar la imagen
+            downloadImage(photo.src);
         }
 
-        // ********* Fin de la funcionalidad para tomar una captura de pantalla *********
+        // Función para descargar la imagen
+        function downloadImage(dataUrl) {
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            link.download = 'captura.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // ********* Fin de la funcionalidad para tomar una fotografía *********
     </script>
 </body>
 </html>
