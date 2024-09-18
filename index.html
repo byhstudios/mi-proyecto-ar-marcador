@@ -53,9 +53,8 @@
                 id="shadow"
                 position="-0.28 -0.5 -2.01" 
                 rotation="-90 0 0" 
-                radius="0.2" 
-                color="#000000" 
-                opacity="0.3">
+                radius="0.3" 
+                material="src: #shadowTexture; transparent: true;">
             </a-circle>
 
             <!-- Cargar el modelo GLB con ajustes -->
@@ -73,7 +72,27 @@
     <!-- Imagen para mostrar la fotografía tomada -->
     <img id="photo" />
 
+    <!-- Canvas para la textura de la sombra -->
+    <canvas id="shadowTexture" width="512" height="512" style="display: none;"></canvas>
+
     <script>
+        // Crear un gradiente radial en el canvas para la sombra
+        const shadowCanvas = document.getElementById('shadowTexture');
+        const shadowContext = shadowCanvas.getContext('2d');
+
+        const centerX = shadowCanvas.width / 2;
+        const centerY = shadowCanvas.height / 2;
+        const radius = shadowCanvas.width / 2;
+
+        // Crear un gradiente radial
+        const gradient = shadowContext.createRadialGradient(centerX, centerY, radius * 0.1, centerX, centerY, radius);
+        gradient.addColorStop(0, 'rgba(0, 0, 0, 0.3)'); // Centro oscuro
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');   // Borde exterior difuso
+
+        // Dibujar el círculo con el gradiente
+        shadowContext.fillStyle = gradient;
+        shadowContext.fillRect(0, 0, shadowCanvas.width, shadowCanvas.height);
+
         // Acceder a la cámara trasera
         const video = document.getElementById('videoElement');
 
