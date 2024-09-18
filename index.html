@@ -108,36 +108,25 @@
 
         // Función que se ejecuta al hacer clic en el modelo 3D
         function takePhoto() {
-            // Almacenar la escala original
-            const originalScale = model.getAttribute('scale');
-
-            // Ajustar la escala del modelo para hacerlo más largo (20% más en el eje Y)
-            model.setAttribute('scale', {
-                x: originalScale.x,
-                y: originalScale.y * 1.2, // Incrementar el tamaño en el eje Y
-                z: originalScale.z
-            });
-
             // Crear un canvas para capturar la imagen
             const canvas = document.createElement('canvas');
+
+            // Ajustar el tamaño del canvas para hacerlo 20% más alto que el ancho
+            const canvasWidth = video.videoWidth;
+            const canvasHeight = video.videoHeight * 1.2; // 20% más alto
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
             const context = canvas.getContext('2d');
 
-            // Configurar el tamaño del canvas
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-
-            // Dibujar el video de la cámara en el canvas
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            // Dibujar el video de la cámara en el canvas ajustado
+            context.drawImage(video, 0, (canvasHeight - video.videoHeight) / 2, canvasWidth, video.videoHeight);
 
             // Obtener la escena de A-Frame
             const scene = document.querySelector('a-scene');
 
-            // Renderizar la escena 3D en el canvas
+            // Renderizar la escena 3D en el canvas ajustado
             scene.renderer.render(scene.object3D, scene.camera);
-            context.drawImage(scene.renderer.domElement, 0, 0, canvas.width, canvas.height);
-
-            // Restaurar la escala original del modelo
-            model.setAttribute('scale', originalScale);
+            context.drawImage(scene.renderer.domElement, 0, (canvasHeight - video.videoHeight) / 2, canvasWidth, video.videoHeight);
 
             // Obtener la imagen combinada como una URL en formato PNG
             const photo = document.getElementById('photo');
