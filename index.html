@@ -108,47 +108,46 @@
 
         // Función que se ejecuta al hacer clic en el modelo 3D
         function takePhoto() {
-            // Almacenar la escala original del modelo 3D
-            const originalScale = model.getAttribute('scale');
-
-            // Ajustar la escala del modelo para que sea un 20% más alto
-            model.setAttribute('scale', {
-                x: originalScale.x,
-                y: originalScale.y * 1.2, // Incrementar el tamaño en el eje Y
-                z: originalScale.z
-            });
-
             // Crear un canvas para capturar la imagen
             const canvas = document.createElement('canvas');
-
-            // Ajustar el tamaño del canvas para hacerlo 20% más alto que el ancho
-            const canvasWidth = video.videoWidth;
-            const canvasHeight = video.videoHeight * 1.2; // 20% más alto
-            canvas.width = canvasWidth;
-            canvas.height = canvasHeight;
             const context = canvas.getContext('2d');
 
-            // Dibujar el video de la cámara en el canvas ajustado
-            context.drawImage(video, 0, (canvasHeight - video.videoHeight) / 2, canvasWidth, video.videoHeight);
+            // Configurar el tamaño del canvas
+            const canvasWidth = video.videoWidth;
+            const canvasHeight = video.videoHeight;
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+
+            // Dibujar el video de la cámara en el canvas
+            context.drawImage(video, 0, 0, canvasWidth, canvasHeight);
 
             // Obtener la escena de A-Frame
             const scene = document.querySelector('a-scene');
 
-            // Renderizar la escena 3D en el canvas ajustado
+            // Renderizar la escena 3D en el canvas
             scene.renderer.render(scene.object3D, scene.camera);
-            context.drawImage(scene.renderer.domElement, 0, (canvasHeight - video.videoHeight) / 2, canvasWidth, video.videoHeight);
+            context.drawImage(scene.renderer.domElement, 0, 0, canvasWidth, canvasHeight);
 
-            // Restaurar la escala original del modelo
-            model.setAttribute('scale', originalScale);
+            // Crear un nuevo canvas para estirar la imagen final
+            const stretchedCanvas = document.createElement('canvas');
+            const stretchedContext = stretchedCanvas.getContext('2d');
 
-            // Obtener la imagen combinada como una URL en formato PNG
+            // Ajustar el tamaño del canvas estirado
+            const stretchedHeight = canvasHeight * 1.2; // 20% más alto
+            stretchedCanvas.width = canvasWidth;
+            stretchedCanvas.height = stretchedHeight;
+
+            // Dibujar la imagen original estirada en el nuevo canvas
+            stretchedContext.drawImage(canvas, 0, 0, canvasWidth, stretchedHeight);
+
+            // Obtener la imagen estirada como una URL en formato PNG
             const photo = document.getElementById('photo');
-            photo.src = canvas.toDataURL('image/png');
+            photo.src = stretchedCanvas.toDataURL('image/png');
 
             // Mostrar la imagen tomada en la página
             photo.style.display = 'block';
 
-            // Descargar la imagen
+            // Descargar la imagen estirada
             downloadImage(photo.src);
         }
 
