@@ -63,7 +63,8 @@
                 gltf-model="url(modelo.glb)" 
                 position="-0.28 -0.5 -2" 
                 scale="3.5 3.5 3.5" 
-                rotation="-3 115 20"> 
+                rotation="-3 115 20" 
+                rotation-listener>
             </a-entity>
             <a-entity camera></a-entity>
         </a-scene>
@@ -191,6 +192,39 @@
         }
 
         // ********* Fin de la funcionalidad para tomar una fotografía *********
+
+        // ********* Rotación del modelo 3D al arrastrar *********
+
+        AFRAME.registerComponent('rotation-listener', {
+            schema: {
+                rotationSpeed: {type: 'number', default: 0.5}
+            },
+            init: function () {
+                let isDragging = false;
+                let previousMousePosition = { x: 0, y: 0 };
+                
+                this.el.addEventListener('mousedown', (event) => {
+                    isDragging = true;
+                });
+
+                this.el.addEventListener('mousemove', (event) => {
+                    if (isDragging) {
+                        let deltaX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
+                        let currentRotation = this.el.getAttribute('rotation');
+                        currentRotation.y += deltaX * this.data.rotationSpeed;
+                        this.el.setAttribute('rotation', currentRotation);
+                    }
+                });
+
+                this.el.addEventListener('mouseup', () => {
+                    isDragging = false;
+                });
+
+                this.el.addEventListener('mouseleave', () => {
+                    isDragging = false;
+                });
+            }
+        });
     </script>
 </body>
 </html>
