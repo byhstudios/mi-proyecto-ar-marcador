@@ -57,12 +57,12 @@
                 material="src: #shadowTexture; transparent: true;">
             </a-circle>
 
-            <!-- Cargar el modelo GLB con ajustes (tamaño reducido un 10%) -->
+            <!-- Cargar el modelo GLB con ajustes -->
             <a-entity 
                 id="3dModel"
                 gltf-model="url(modelo.glb)" 
                 position="-0.28 -0.5 -2" 
-                scale="3.15 3.15 3.15"
+                scale="3.5 3.5 3.5" 
                 rotation="-3 115 20">
             </a-entity>
             <a-entity camera></a-entity>
@@ -157,26 +157,25 @@
             scene.renderer.render(scene.object3D, scene.camera);
             context.drawImage(scene.renderer.domElement, 0, 0, canvasWidth, canvasHeight);
 
-            // Crear un nuevo canvas para estirar la imagen final con un 10% más de altura
-            const stretchedCanvas = document.createElement('canvas');
-            const stretchedContext = stretchedCanvas.getContext('2d');
+            // Crear un nuevo canvas para estirar la imagen del modelo 3D
+            const adjustedCanvas = document.createElement('canvas');
+            const adjustedContext = adjustedCanvas.getContext('2d');
 
-            // Ajustar el tamaño del canvas estirado con solo un 10% más alto
-            const stretchedHeight = canvasHeight * 1.1; // 10% más alto
-            stretchedCanvas.width = canvasWidth;
-            stretchedCanvas.height = stretchedHeight;
+            // Ajustar el tamaño del canvas ajustado
+            adjustedCanvas.width = canvasWidth * 0.95;  // Reducir el ancho del modelo en un 5%
+            adjustedCanvas.height = canvasHeight * 1.1; // Aumentar la altura del modelo en un 10%
 
-            // Dibujar la imagen original estirada en el nuevo canvas
-            stretchedContext.drawImage(canvas, 0, 0, canvasWidth, stretchedHeight);
+            // Dibujar la imagen original ajustada en el nuevo canvas
+            adjustedContext.drawImage(canvas, 0, 0, adjustedCanvas.width, adjustedCanvas.height);
 
-            // Obtener la imagen estirada como una URL en formato PNG
+            // Obtener la imagen ajustada como una URL en formato PNG
             const photo = document.getElementById('photo');
-            photo.src = stretchedCanvas.toDataURL('image/png');
+            photo.src = adjustedCanvas.toDataURL('image/png');
 
             // Mostrar la imagen tomada en la página
             photo.style.display = 'block';
 
-            // Descargar la imagen estirada
+            // Descargar la imagen ajustada
             downloadImage(photo.src);
         }
 
