@@ -141,7 +141,7 @@
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
 
-            // Configurar el tamaño del canvas con la resolución del video
+            // Configurar el tamaño del canvas
             const canvasWidth = video.videoWidth;
             const canvasHeight = video.videoHeight;
             canvas.width = canvasWidth;
@@ -153,33 +153,29 @@
             // Obtener la escena de A-Frame
             const scene = document.querySelector('a-scene');
 
-            // Renderizar la escena 3D para la composición final
+            // Renderizar la escena 3D en el canvas
             scene.renderer.render(scene.object3D, scene.camera);
+            context.drawImage(scene.renderer.domElement, 0, 0, canvasWidth, canvasHeight);
 
-            // Crear un nuevo canvas para escalar el modelo 3D en la imagen final
-            const modelCanvas = document.createElement('canvas');
-            modelCanvas.width = canvasWidth;
-            modelCanvas.height = canvasHeight;
-            const modelContext = modelCanvas.getContext('2d');
+            // Crear un nuevo canvas para estirar la imagen del modelo 3D
+            const adjustedCanvas = document.createElement('canvas');
+            const adjustedContext = adjustedCanvas.getContext('2d');
 
-            // Dibujar la imagen del modelo en el nuevo canvas
-            modelContext.drawImage(scene.renderer.domElement, 0, 0, scene.renderer.domElement.width * 0.7, scene.renderer.domElement.height * 0.7);
+            // Ajustar el tamaño del canvas ajustado
+            adjustedCanvas.width = canvasWidth * 0.95;  // Reducir el ancho del modelo en un 5%
+            adjustedCanvas.height = canvasHeight * 1.1; // Aumentar la altura del modelo en un 10%
 
-            // Calcular la posición para centrar el modelo escalado en el canvas principal
-            const offsetX = (canvasWidth - (scene.renderer.domElement.width * 0.7)) / 2;
-            const offsetY = (canvasHeight - (scene.renderer.domElement.height * 0.7)) / 2;
+            // Dibujar la imagen original ajustada en el nuevo canvas
+            adjustedContext.drawImage(canvas, 0, 0, adjustedCanvas.width, adjustedCanvas.height);
 
-            // Dibujar el modelo escalado sobre la imagen de la cámara
-            context.drawImage(modelCanvas, offsetX, offsetY);
-
-            // Obtener la imagen final como una URL en formato PNG
+            // Obtener la imagen ajustada como una URL en formato PNG
             const photo = document.getElementById('photo');
-            photo.src = canvas.toDataURL('image/png');
+            photo.src = adjustedCanvas.toDataURL('image/png');
 
             // Mostrar la imagen tomada en la página
             photo.style.display = 'block';
 
-            // Descargar la imagen
+            // Descargar la imagen ajustada
             downloadImage(photo.src);
         }
 
@@ -194,6 +190,40 @@
         }
 
         // ********* Fin de la funcionalidad para tomar una fotografía *********
+
+        // ********* Rotación del modelo 3D en toda la pantalla (menos sobre el modelo) *********
+
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+
+        // Escuchar eventos táctiles en todo el documento
+        document.addEventListener('touchstart', (event) => {
+            // Si el toque no es sobre el modelo 3D
+            if (!event.target.closest('#3dModel')) {
+                isDragging = true;
+                previousMousePosition.x = event.touches[0].clientX;
+            }
+        });
+
+        document.addEventListener('touchmove', (event) => {
+            if (isDragging) {
+                const currentX = event.touches[0].clientX;
+                const deltaX = currentX - previousMousePosition.x;
+
+                // Obtener la rotación actual del modelo
+                let rotation = model.getAttribute('rotation');
+                rotation.y += deltaX * 0.5; // Ajusta la velocidad de rotación
+                model.setAttribute('rotation', rotation);
+
+                // Actualizar la posición del mouse
+                previousMousePosition.x = currentX;
+            }
+        });
+
+        document.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+
     </script>
 </body>
 </html>
