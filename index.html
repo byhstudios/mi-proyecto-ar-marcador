@@ -57,12 +57,12 @@
                 material="src: #shadowTexture; transparent: true;">
             </a-circle>
 
-            <!-- Cargar el modelo GLB con ajustes -->
+            <!-- Cargar el modelo GLB con ajustes (tamaño reducido un 10%) -->
             <a-entity 
                 id="3dModel"
                 gltf-model="url(modelo.glb)" 
                 position="-0.28 -0.5 -2" 
-                scale="3.5 3.5 3.5" 
+                scale="3.15 3.15 3.15"  <!-- Reducción del tamaño en un 10% -->
                 rotation="-3 115 20">
             </a-entity>
             <a-entity camera></a-entity>
@@ -157,12 +157,12 @@
             scene.renderer.render(scene.object3D, scene.camera);
             context.drawImage(scene.renderer.domElement, 0, 0, canvasWidth, canvasHeight);
 
-            // Crear un nuevo canvas para estirar la imagen final
+            // Crear un nuevo canvas para estirar la imagen final con un 10% más de altura
             const stretchedCanvas = document.createElement('canvas');
             const stretchedContext = stretchedCanvas.getContext('2d');
 
-            // Ajustar el tamaño del canvas estirado
-            const stretchedHeight = canvasHeight * 1.3; // 30% más alto
+            // Ajustar el tamaño del canvas estirado con solo un 10% más alto
+            const stretchedHeight = canvasHeight * 1.1; // 10% más alto
             stretchedCanvas.width = canvasWidth;
             stretchedCanvas.height = stretchedHeight;
 
@@ -227,3 +227,4 @@
 
     </script>
 </body>
+</html>
