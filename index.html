@@ -153,23 +153,24 @@
             // Obtener la escena de A-Frame
             const scene = document.querySelector('a-scene');
 
-            // Crear un nuevo canvas para renderizar el modelo 3D y ajustar solo el modelo sin estirar al ancho completo
+            // Renderizar la escena 3D para la composición final
+            scene.renderer.render(scene.object3D, scene.camera);
+
+            // Crear un nuevo canvas para escalar el modelo 3D en la imagen final
             const modelCanvas = document.createElement('canvas');
-            const modelContext = modelCanvas.getContext('2d');
             modelCanvas.width = canvasWidth;
             modelCanvas.height = canvasHeight;
+            const modelContext = modelCanvas.getContext('2d');
 
-            // Renderizar la escena 3D (en el contexto de A-Frame) en el canvas del modelo
-            scene.renderer.render(scene.object3D, scene.camera);
-            const modelImage = scene.renderer.domElement;
+            // Dibujar la imagen del modelo en el nuevo canvas
+            modelContext.drawImage(scene.renderer.domElement, 0, 0, scene.renderer.domElement.width * 0.7, scene.renderer.domElement.height * 0.7);
 
-            // Calcular las dimensiones para centrar la imagen del modelo en el canvas sin cambiar las proporciones
-            const offsetX = (canvasWidth - modelImage.width) / 2;
-            const offsetY = (canvasHeight - modelImage.height) / 2;
+            // Calcular la posición para centrar el modelo escalado en el canvas principal
+            const offsetX = (canvasWidth - (scene.renderer.domElement.width * 0.7)) / 2;
+            const offsetY = (canvasHeight - (scene.renderer.domElement.height * 0.7)) / 2;
 
-            // Dibujar la imagen del modelo centrada en el canvas principal
-            modelContext.drawImage(modelImage, offsetX, offsetY, modelImage.width, modelImage.height);
-            context.drawImage(modelCanvas, 0, 0, canvasWidth, canvasHeight);
+            // Dibujar el modelo escalado sobre la imagen de la cámara
+            context.drawImage(modelCanvas, offsetX, offsetY);
 
             // Obtener la imagen final como una URL en formato PNG
             const photo = document.getElementById('photo');
